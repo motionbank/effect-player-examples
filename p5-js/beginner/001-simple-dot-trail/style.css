@@ -1,0 +1,11 @@
+/* reset margin and padding, */
+/* center <canvas> by using flexbox */
+body {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
