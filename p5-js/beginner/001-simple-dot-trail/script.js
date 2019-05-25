@@ -10,6 +10,7 @@
 * - start it and press play
 * - enable "Send OSC packages"
 * - enable "Use WebSockets"
+* - disable "Send annotations over OSC"
 * - set Filters to only send one performer (Amber?)
 * - set Filters to only send one joint (Hips?)
 */
