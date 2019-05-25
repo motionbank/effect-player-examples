@@ -4,6 +4,16 @@
  *  Use a recent browser with this as we are using ES6+ JavaScript syntax.
  */
 
+/*
+* BEFORE YOU START ...
+* - download the Effect Player: effect.motionbank.org
+* - start it and press play
+* - enable "Send OSC packages"
+* - enable "Use WebSockets"
+* - set Filters to only send one performer (Amber?)
+* - set Filters to only send one joint (Hips?)
+*/
+
 // define a variable to be an array
 // and add first position at 0,0 to it
 let positions = [{
