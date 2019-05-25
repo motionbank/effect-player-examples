@@ -45,26 +45,42 @@ function draw() {
   ellipse(positions[last].x, positions[last].y, 10, 10)
 }
 
+/* -- WebSocket part -- */
+
+// we are using a JavaScript library that brings OSC style messages
+// to the browser: https://github.com/colinbdclark/osc.js
+
+// OSC messages are received via a WebSocket adapter, we need to
+// initialize this first giving the address of the WebSocket
 const oscPort = new osc.WebSocketPort({
   url: "ws://127.0.0.1:8888",
   metadata: true
 })
 
+// now we define a callback function to handle data that
+// comes in from the Effect Player
 const onWebSocketMessage = function(message) {
 
+  // uncomment the following to have a look at the structure
+  // of the message received in the browsers console:
+  // console.log(message)
+
+  // store the x,y part of the message in two handy variables
   const x = message.args[0].value / 10
   const y = message.args[2].value / 10
 
+  // check if our array of positions has not reached the max we set above
   if (positions.length > maxPositions) {
-    positions = positions.slice(1,maxPositions)
+    positions = positions.slice(1) // remove first item
   }
 
-  positions.push({
-    x,
-    y
-  })
+  // now add the new x,y values as object to our array
+  positions.push({x,y})
 }
 
+// register the callback function for events of type "message"
+// which is triggered when new messages come in (you guessed it)
 oscPort.on('message', onWebSocketMessage)
 
+// now start listening on the socket
 oscPort.open()
