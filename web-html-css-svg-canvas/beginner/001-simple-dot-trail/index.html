@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Motion Bank / Effect Player Example / P5 / Simple Dot Trail</title>
+
+  <!-- See: http://effect.motionbank.org/ -->
+  <!-- Author: fjenett, 2019-05-25 -->
+
+  <script src="https://unpkg.com/osc@2.2.4/dist/osc-browser.min.js" defer></script>
+  <script src="script.js" defer></script>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <svg id="svg-container" width="800" height="800">
+    <g transform="translate(400,400)">
+      <polyline id="trail" points="0,0" ></polyline>
+      <circle id="dot" cx="0" cy="0" r="5"></circle>
+    </g>
+  </svg>
+</body>
+
+</html>
