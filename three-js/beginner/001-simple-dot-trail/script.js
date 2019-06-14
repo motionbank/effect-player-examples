@@ -114,6 +114,9 @@ const oscPort = new osc.WebSocketPort({
 // comes in from the Effect Player
 const onWebSocketMessage = function(message) {
 
+  // we are only interested in messages with coordinates (6 values)
+  if (message.args.length <= 1) return
+
   // uncomment the following to have a look at the structure
   // of the message received in the browsers console:
   // console.log(message)
