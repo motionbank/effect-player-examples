@@ -5,15 +5,15 @@
  */
 
 /*
-* BEFORE YOU START ...
-* - download the Effect Player: effect.motionbank.org
-* - start it and press play
-* - enable "Send OSC packages"
-* - enable "Use WebSockets"
-* - disable "Send annotations over OSC"
-* - set Filters to only send one performer (Amber?)
-* - set Filters to only send one joint (Hips?)
-*/
+ * BEFORE YOU START ...
+ * - download the Effect Player: effect.motionbank.org
+ * - start it and press play
+ * - enable "Send OSC packages"
+ * - enable "Use WebSockets"
+ * - disable "Send annotations over OSC"
+ * - set Filters to only send one performer (Amber?)
+ * - set Filters to only send one joint (Hips?)
+ */
 
 // define a variable to be an array
 // and add first position at 0,0 to it
@@ -45,14 +45,14 @@ function draw() {
   stroke(0)
   noFill()
   for (let i = 1, k = positions.length; i < k; i++) {
-    const p1 = positions[i-1]
+    const p1 = positions[i - 1]
     const p2 = positions[i]
     line(p1.x, p1.y, p2.x, p2.y)
   }
 
   noStroke()
   fill(0)
-  const last = positions.length-1
+  const last = positions.length - 1
   ellipse(positions[last].x, positions[last].y, 10, 10)
 }
 
@@ -70,7 +70,10 @@ const oscPort = new osc.WebSocketPort({
 
 // now we define a callback function to handle data that
 // comes in from the Effect Player
-const onWebSocketMessage = function(message) {
+const onWebSocketMessage = function (message) {
+
+  // we are only interested in messages with coordinates (6 values)
+  if (message.args.length === 1) return
 
   // uncomment the following to have a look at the structure
   // of the message received in the browsers console:
@@ -86,7 +89,9 @@ const onWebSocketMessage = function(message) {
   }
 
   // now add the new x,y values as object to our array
-  positions.push({x,y})
+  positions.push({
+    x, y
+  })
 }
 
 // register the callback function for events of type "message"
