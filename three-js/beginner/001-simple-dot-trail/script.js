@@ -17,10 +17,7 @@
 
 // define a variable to be an array
 // and add first position at 0,0 to it
-let positions = [{
-  x: 0,
-  y: 0
-}]
+let positions = []
 
 // define a variable to set how long the trail will be
 // (in other words: how many positions are kept)
@@ -30,40 +27,23 @@ const maxPositions = 100
 
 const scene = new THREE.Scene()
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
-camera.position.z = 10;
+camera.position.y = 20
+camera.position.z = 50
 const controls = new THREE.OrbitControls(camera)
 
-// var geometry = new THREE.BoxGeometry(1, 1, 1);
-// var material = new THREE.MeshBasicMaterial({
-//   color: 0x00ff00
-// });
-// var cube = new THREE.Mesh(geometry, material);
-// scene.add(cube);
+const light = new THREE.AmbientLight(0x404040) // soft white light
+scene.add(light)
 
-var light = new THREE.AmbientLight(0x404040); // soft white light
-scene.add(light);
-var light = new THREE.DirectionalLight( 0xffffff, 2 ); // soft white light
-scene.add(light);
+const geometry = new THREE.BufferGeometry()
+const vertices = new Float32Array(maxPositions * 3)
+geometry.addAttribute('position', new THREE.BufferAttribute(vertices, 3))
+geometry.setDrawRange( 0, 0 )
 
-const path = new THREE.LineCurve3(
-  new THREE.Vector3(0, 0, 0),
-  new THREE.Vector3(10, 2, 0)
-)
-
-// var geometry = new THREE.BufferGeometry().setFromPoints(path.getPoints());
-// var material = new THREE.LineBasicMaterial({
-//   color: 0xffffff
-// });
-// var line = new THREE.Line(geometry, material);
-// scene.add(line);
-
-const geometry = new THREE.TubeBufferGeometry(path, 2, 0.1, 8, false)
-geometry.position = new THREE.Vector3(0, 0, 0)
-const material = new THREE.MeshLambertMaterial({
-  color: 0x00ff00
-})
-const mesh = new THREE.Mesh(geometry, material)
-scene.add(mesh)
+const material = new THREE.LineBasicMaterial({
+  color: 0xffffff
+});
+const line = new THREE.Line(geometry, material)
+scene.add(line)
 
 const renderer = new THREE.WebGLRenderer()
 renderer.setSize(window.innerWidth, window.innerHeight)
@@ -77,23 +57,6 @@ const onAnimationFrame = function() {
   // to do so, see: https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame
   window.requestAnimationFrame(onAnimationFrame)
 
-  // // define a (empty) variable to be used to collect the positions for
-  // // the points attribute of the polyline element: <polyline points="" />
-  // let pointsAttr = ''
-  //
-  // // walk through positions and add the to the string (text) in the variable
-  // for (let i = 0, k = positions.length; i < k; i++) {
-  //   const point = positions[i]
-  //   pointsAttr = pointsAttr + ' ' + point.x + ' ' + point.y
-  // }
-  // polylineEl.setAttribute('points', pointsAttr)
-  //
-  // // update the dot (circle) position
-  // const last = positions.length - 1
-  // circleEl.setAttribute('cx', positions[last].x)
-  // circleEl.setAttribute('cy', positions[last].y)
-
-  // controls.update()
   renderer.render(scene, camera)
 }
 onAnimationFrame()
@@ -115,15 +78,16 @@ const oscPort = new osc.WebSocketPort({
 const onWebSocketMessage = function(message) {
 
   // we are only interested in messages with coordinates (6 values)
-  if (message.args.length <= 1) return
+  if (message.args.length === 1) return
 
   // uncomment the following to have a look at the structure
   // of the message received in the browsers console:
   // console.log(message)
 
-  // store the x,y part of the message in two handy variables
-  const x = message.args[0].value / 10
-  const y = message.args[2].value / 10
+  // store the x,y,z part of the message into variables
+  const x = message.args[0].value / 100
+  const y = message.args[1].value / 100
+  const z = message.args[2].value / 100
 
   // check if our array of positions has not reached the max we set above
   if (positions.length > maxPositions) {
@@ -131,10 +95,20 @@ const onWebSocketMessage = function(message) {
   }
 
   // now add the new x,y values as object to our array
-  positions.push({
-    x,
-    y
+  positions.push({x, y, z})
+
+  // now update the geometry of the 3D line
+  const arr = geometry.attributes.position.array
+  positions.forEach((p, i) => {
+    const j = i*3
+    arr[j] = p.x
+    arr[j+1] = p.y
+    arr[j+2] = p.z
   })
+  // set to draw only as many points as we have
+  geometry.setDrawRange( 0, positions.length )
+  // let THREE know this geometry needs to be updated (as it's buffered)
+  geometry.attributes.position.needsUpdate = true
 }
 
 // register the callback function for events of type "message"
